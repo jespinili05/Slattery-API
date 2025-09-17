@@ -1,0 +1,204 @@
+{
+    "Company": "John Dev Inc.",
+    "Templates": [
+      {
+        "name": "An Australian Business with a Global Reach",
+        "fileName": "An Australian Business with a Global Reach.pdf",
+        "editable": false
+      },
+      {
+        "name": "Company Profile - Slattery Asset Advisory",
+        "fileName": "Company Profile - Slattery Asset Advisory.pdf",
+        "editable": false
+      },
+      {
+        "name": "Why Slattery - Remarketing Solutions",
+        "fileName": "Why Slattery - Remarketing Solutions.pdf",
+        "editable": false
+      },
+      {
+        "name": "Why Slattery - Skill and Expertise",
+        "fileName": "Why Slattery - Skill and Expertise.pdf",
+        "editable": false
+      },
+      {
+        "name": "Our Client Promise",
+        "fileName": "Our Client Promise.pdf",
+        "editable": false
+      },
+      {
+        "name": "eevee Overview",
+        "fileName": "Why Slattery - Eevee Auctions.pdf",
+        "editable": false
+      },
+      {
+        "name": "Staff Profiles",
+        "fileName": "Staff Profiles.pdf",
+        "editable": false,
+        "staffs": [
+          {
+            "name": "PADDY SLATTERY",
+            "fileName": "Profiles - Paddy Slattery.pdf"
+          },
+          {
+            "name": "James Slattery",
+            "fileName": "Profiles - James Slattery.pdf"
+          },
+          {
+            "name": "Tim Slattery",
+            "fileName": "Profiles - Tim Slattery.pdf"
+          },
+          {
+            "name": "Steve Martinelli",
+            "fileName": "Profiles - Steve Martinelli.pdf"
+          },
+          {
+          "name": "Ahmet Ozcelik",
+          "fileName": "Profiles - Ahmet Ozcelik.pdf"
+          },
+          {
+          "name": "Heath Burriss",
+          "fileName": "Profiles - Heath Burriss.pdf"
+          },
+          {
+          "name": "Jono Wilson",
+          "fileName": "Profiles - Jono Wilson.pdf"
+          }
+        ]
+      },
+      {
+        "name": "Our Offices - Newcastle",
+        "fileName": "Our Offices & Auction Sites - Newcastle.pdf",
+        "editable": false
+      },
+      {
+        "name": "Our Offices - Brisbane",
+        "fileName": "Our Offices & Auction Sites - Brisbane.pdf",
+        "editable": false
+      },
+      {
+        "name": "Our Offices - Roma",
+        "fileName": "Our Offices & Auction Sites - Roma.pdf",
+        "editable": false
+      },
+      {
+        "name": "Our Expertise - Automotive",
+        "fileName": "Our Expertise - Automotive.pdf",
+        "editable": false
+      },
+      {
+        "name": "Valuations & Asset Management Overview",
+        "fileName": "Valuations & Asset Management Overview.pdf",
+        "editable": false
+      },
+      {
+        "name": "Valuation Experience",
+        "fileName": "Valuation Experience.pdf",
+        "editable": false
+      },
+      {
+        "name": "Valuation Reports",
+        "fileName": "Valuation Reports.pdf",
+        "editable": false
+      },
+      {
+        "name": "Sample Valuation",
+        "fileName": "Sample Valuation.pdf",
+        "editable": false
+      },
+      {
+        "name": "Print Marketing Examples - Agriculture",
+        "fileName": "Print Marketing Examples - Agriculture.pdf",
+        "editable": false
+      },
+      {
+        "name": "Print Marketing Examples - Manufacturing",
+        "fileName": "Print Marketing Examples - Manufacturing.pdf",
+        "editable": false
+      },
+      {
+        "name": "Digital Marketing Examples - Agriculture",
+        "fileName": "Digital Marketing Examples - Agriculture.pdf",
+        "editable": false
+      },
+      {
+        "name": "Digital Marketing Examples - Manufacturing",
+        "fileName": "Digital Marketing Examples - Manufacturing.pdf",
+        "editable": false
+      },
+     {
+        "name": "Bespoke Brochure",
+        "fileName": "Bespoke Brochure.pdf",
+        "editable": false
+      },
+      {
+        "name": "Our Fee Structure",
+        "fileName": "Our Fee Structure.pdf",
+        "editable": false
+      },
+      {
+        "name": "Our Fee Structure - Trucks & Machinery",
+        "fileName": "Our Fee Structure - Trucks & Machinery.pdf",
+        "editable": true,
+        "fieldValues": {
+            "ServiceFee": "80 % + GST",
+            "Detailing": "$300",
+            "AdvertisingCosts": "$100",
+            "RiskAssessment": "$100",
+            "Transport": "$300",
+            "BuyersPremium": "2.25% (minimum $275)",
+            "Storage": "$300"
+        }
+      },
+      {
+        "name": "Our Fee Structure no-charge table",
+        "fileName": "Our Fee Structure no-charge table.pdf",
+        "editable": false
+      },
+      {
+        "name": "Reporting",
+        "fileName": "Reporting.pdf",
+        "editable": false
+      },
+      {
+        "name": "Insurances/Trust Account & Payments",
+        "fileName": "Insurances Trust Account & Payments.pdf",
+        "editable": false
+      },
+      {
+        "name": "Workplace Health, Safety & Environmental System",
+        "fileName": "Workplace Health Safety & Environmental System.pdf",
+        "editable": false
+      },
+      {
+        "name": "Code of Ethics",
+        "fileName": "Code of Ethics.pdf",
+        "editable": false
+      },
+      {
+        "name": "References",
+        "fileName": "References.pdf",
+        "editable": false
+      },
+      {
+        "name": "Our Contact Details",
+        "fileName": "Our Contact Details.pdf",
+        "editable": false
+      },
+      {
+        "name": "Member Association - AMEA",
+        "fileName": "Member Association - AMEA.pdf",
+        "editable": false
+      },
+      {
+        "name": "Annexure A - Certificates",
+        "fileName": "Annexure A - Certificates.pdf",
+        "editable": false
+      },
+      {
+        "name": "Annexure B - Risk Assessment Example.pdf",
+        "fileName": "Annexure B - Risk Assessment Example.pdf",
+        "editable": false
+      }
+    ]
+  }
