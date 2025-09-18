@@ -163,10 +163,13 @@ router.get('/download/:filename', (req, res) => {
     
     // Validate and sanitize filename
     const sanitizedFilename = ValidationUtils.sanitizeFilename(filename);
-    const filePath = path.join(__dirname, '..', 'Output', sanitizedFilename);
-    
+    // Use /tmp directory in serverless environments, local Output directory otherwise
+    const outputDir = process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME
+      ? '/tmp'
+      : path.join(__dirname, '..', 'Output');
+    const filePath = path.join(outputDir, sanitizedFilename);
+
     // Security check - ensure file is in output directory
-    const outputDir = path.join(__dirname, '..', 'Output');
     if (!filePath.startsWith(outputDir)) {
       return res.status(403).json(
         ValidationUtils.createErrorResponse(
@@ -215,7 +218,10 @@ router.get('/download/:filename', (req, res) => {
  */
 router.get('/files', (req, res) => {
   try {
-    const outputDir = path.join(__dirname, '..', 'Output');
+    // Use /tmp directory in serverless environments, local Output directory otherwise
+    const outputDir = process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME
+      ? '/tmp'
+      : path.join(__dirname, '..', 'Output');
     
     if (!fs.existsSync(outputDir)) {
       return res.json(ValidationUtils.createSuccessResponse([], 'No files found (output directory does not exist)'));

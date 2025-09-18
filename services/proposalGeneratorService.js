@@ -16,7 +16,10 @@ class ProposalGeneratorService {
 
   constructor() {
     this.templatesDir = path.join(__dirname, '..', 'Templates');
-    this.outputDir = path.join(__dirname, '..', 'Output');
+    // Use /tmp directory in serverless environments, local Output directory otherwise
+    this.outputDir = process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME
+      ? '/tmp'
+      : path.join(__dirname, '..', 'Output');
   }
 
   /**

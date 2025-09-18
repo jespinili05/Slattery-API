@@ -265,7 +265,10 @@ async function generateTOCFromTemplate(templatePath, outputPath, tocData = SLATT
  */
 async function testTOCGeneration() {
   const templatePath = path.join(__dirname, 'Templates', 'Table of Contents.pdf');
-  const outputDir = path.join(__dirname, 'Output');
+  // Use /tmp directory in serverless environments, local Output directory otherwise
+  const outputDir = process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME
+    ? '/tmp'
+    : path.join(__dirname, 'Output');
   
   // Ensure output directory exists
   if (!fs.existsSync(outputDir)) {
