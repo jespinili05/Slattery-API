@@ -9,6 +9,11 @@ class ValidationUtils {
    * Handles: array wrapper, JSON/config wrappers, or direct config
    */
   static normalizeConfig(inputData) {
+    // Safety check to prevent infinite recursion
+    if (!inputData || typeof inputData !== 'object') {
+      return inputData;
+    }
+
     let config = inputData;
 
     // Handle array wrapper: [{ "JSON": { "config": {...} } }]
@@ -17,23 +22,28 @@ class ValidationUtils {
     }
 
     // Handle JSON wrapper: { "JSON": { "config": {...} } }
-    if (config.JSON && config.JSON.config) {
+    if (config && config.JSON && config.JSON.config) {
       config = config.JSON.config;
     }
 
     // Handle config wrapper: { "config": {...} }
-    if (config.config && config.config.Company) {
+    if (config && config.config && config.config.Company) {
       config = config.config;
     }
 
     // Ensure we have the basic structure even if nested differently
     if (!config.Company && !config.Templates) {
-      // Try to find Company and Templates at any level
-      const findInObject = (obj, key) => {
-        if (obj[key]) return obj[key];
+      // Try to find Company and Templates at any level with cycle detection
+      const findInObject = (obj, key, visited = new Set()) => {
+        // Prevent infinite recursion by checking if we've already visited this object
+        if (visited.has(obj)) return null;
+        visited.add(obj);
+
+        if (obj && typeof obj === 'object' && obj[key]) return obj[key];
+
         for (let prop in obj) {
           if (typeof obj[prop] === 'object' && obj[prop] !== null) {
-            const result = findInObject(obj[prop], key);
+            const result = findInObject(obj[prop], key, visited);
             if (result) return result;
           }
         }
