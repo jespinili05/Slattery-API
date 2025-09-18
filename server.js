@@ -103,34 +103,36 @@ app.use((error, req, res, next) => {
   });
 });
 
-// Start server
-const server = app.listen(PORT, () => {
-  console.log(`\n🚀 Slattery Proposal Generator API`);
-  console.log(`📡 Server running on port ${PORT}`);
-  console.log(`🌐 Environment: ${process.env.NODE_ENV || 'development'}`);
-  console.log(`📋 API Documentation:`);
-  console.log(`   Health Check: http://localhost:${PORT}/health`);
-  console.log(`   Service Status: http://localhost:${PORT}/api/proposals/status`);
-  console.log(`   Generate Proposal: POST http://localhost:${PORT}/api/proposals/generate`);
-  console.log(`   Download Files: GET http://localhost:${PORT}/api/proposals/download/:filename`);
-  console.log(`\n✅ Ready to generate proposals!`);
-});
-
-// Graceful shutdown
-process.on('SIGTERM', () => {
-  console.log('SIGTERM received, shutting down gracefully');
-  server.close(() => {
-    console.log('Process terminated');
-    process.exit(0);
+// Start server only if not in serverless environment (Vercel)
+if (process.env.VERCEL !== '1' && require.main === module) {
+  const server = app.listen(PORT, () => {
+    console.log(`\n🚀 Slattery Proposal Generator API`);
+    console.log(`📡 Server running on port ${PORT}`);
+    console.log(`🌐 Environment: ${process.env.NODE_ENV || 'development'}`);
+    console.log(`📋 API Documentation:`);
+    console.log(`   Health Check: http://localhost:${PORT}/health`);
+    console.log(`   Service Status: http://localhost:${PORT}/api/proposals/status`);
+    console.log(`   Generate Proposal: POST http://localhost:${PORT}/api/proposals/generate`);
+    console.log(`   Download Files: GET http://localhost:${PORT}/api/proposals/download/:filename`);
+    console.log(`\n✅ Ready to generate proposals!`);
   });
-});
 
-process.on('SIGINT', () => {
-  console.log('\nSIGINT received, shutting down gracefully');
-  server.close(() => {
-    console.log('Process terminated');
-    process.exit(0);
+  // Graceful shutdown
+  process.on('SIGTERM', () => {
+    console.log('SIGTERM received, shutting down gracefully');
+    server.close(() => {
+      console.log('Process terminated');
+      process.exit(0);
+    });
   });
-});
+
+  process.on('SIGINT', () => {
+    console.log('\nSIGINT received, shutting down gracefully');
+    server.close(() => {
+      console.log('Process terminated');
+      process.exit(0);
+    });
+  });
+}
 
 module.exports = app;
