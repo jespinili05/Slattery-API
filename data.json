@@ -151,6 +151,20 @@
         }
       },
       {
+        "name": "Our Fee Structure - Small Plant & Equipment",
+        "fileName": "Our Fee Structure - Small Plant & Equipment.pdf",
+        "editable": true,
+        "fieldValues": {
+            "ServiceFee": "80 % + GST",
+            "Detailing": "$300",
+            "AdvertisingCosts": "$100",
+            "RiskAssessment": "$100",
+            "Transport": "$300",
+            "BuyersPremium": "2.25% (minimum $275)",
+            "Storage": "$300"
+        }
+      },
+      {
         "name": "Our Fee Structure no-charge table",
         "fileName": "Our Fee Structure no-charge table.pdf",
         "editable": false
@@ -186,9 +200,10 @@
         "editable": false
       },
       {
-        "name": "Member Association - AMEA",
-        "fileName": "Member Association - AMEA.pdf",
-        "editable": false
+        "name": "Member Association",
+        "fileName": "Member Association.pdf",
+        "editable": false,
+        "members": ["AFIA", "AMEA", "AVAA", "IMA", "ISTAT", "PAAO", "SAMS"]
       },
       {
         "name": "Annexure A - Certificates",

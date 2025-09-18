@@ -13,10 +13,17 @@ const proposalService = new ProposalGeneratorService();
  * @route   POST /api/proposals/generate
  * @desc    Generate a proposal PDF from configuration
  * @access  Public
- * @body    { config: Object, outputFileName?: string }
+ * @body    { config: Object, outputFileName?: string } - config can be wrapped in JSON/config objects or arrays
  */
 router.post('/generate', async (req, res) => {
   try {
+    // Normalize config from various JSON structures first
+    if (!req.body.config) {
+      req.body.config = ValidationUtils.normalizeConfig(req.body);
+    } else {
+      req.body.config = ValidationUtils.normalizeConfig(req.body.config);
+    }
+
     // Validate request
     const validationErrors = ValidationUtils.validateApiRequest(req);
     if (validationErrors.length > 0) {
@@ -476,7 +483,21 @@ router.post('/:proposalId/refine', async (req, res) => {
 
     // Get the latest version's proposal data
     const latestVersion = existingProposal.versions[0]; // versions are ordered by version_number desc
-    const proposalData = config || latestVersion.proposal_data;
+
+    // Normalize the config if provided, otherwise use existing proposal data
+    let proposalData;
+    if (config) {
+      // First normalize the config from the request body, handling various JSON structures
+      proposalData = ValidationUtils.normalizeConfig(config);
+    } else {
+      // Try to normalize the entire request body in case config is wrapped in JSON/config objects
+      const normalizedBody = ValidationUtils.normalizeConfig(req.body);
+      if (normalizedBody && normalizedBody.Company && normalizedBody.Templates) {
+        proposalData = normalizedBody;
+      } else {
+        proposalData = latestVersion.proposal_data;
+      }
+    }
 
     if (!proposalData) {
       return res.status(400).json(
@@ -492,15 +513,21 @@ router.post('/:proposalId/refine', async (req, res) => {
     const nextVersionNumber = await ProposalDatabaseService.getNextVersionNumber(proposalId);
     const versionLabel = `v${nextVersionNumber}`;
 
-    // Generate the new proposal using the generator service
-    const result = await proposalService.generateProposal(proposalData);
+    // Generate versioned filename for this specific version
+    const versionedFilename = ProposalDatabaseService.generateVersionedFilename(
+      proposalData.Company,
+      nextVersionNumber
+    );
+
+    // Generate the new proposal using the generator service with custom filename
+    const result = await proposalService.generateProposal(proposalData, versionedFilename);
 
     // Create the new version in the database with the generated document path
     const newVersion = await ProposalDatabaseService.createProposalVersion({
       proposalId: proposalId,
       versionNumber: nextVersionNumber,
       versionLabel: versionLabel,
-      documentPath: result.fileName,
+      documentPath: versionedFilename,
       status: 'submitted',
       createdBy: createdBy || 'db46f7c1-a3ea-4a11-855b-4b3c3cd76562',
       proposalData: proposalData
@@ -522,6 +549,7 @@ router.post('/:proposalId/refine', async (req, res) => {
       },
       generationResult: {
         fileName: result.fileName,
+        location: result.location,
         fileSize: result.fileSize,
         sectionsCount: result.sectionsCount,
         templatesProcessed: result.templatesProcessed

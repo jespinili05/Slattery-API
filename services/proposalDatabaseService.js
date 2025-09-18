@@ -125,8 +125,9 @@ class ProposalDatabaseService {
   static generateVersionedFilename(companyName, versionNumber, createdAt = new Date()) {
     const sanitizedCompany = companyName.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '_');
     const dateStr = createdAt.toISOString().split('T')[0]; // YYYY-MM-DD
+    const timeStr = createdAt.toISOString().split('T')[1].replace(/[:.]/g, '').substring(0, 6); // HHMMSS
 
-    return `Proposal__${sanitizedCompany}_v${versionNumber}_${dateStr}.pdf`;
+    return `Proposal__${sanitizedCompany}_v${versionNumber}_${dateStr}_${timeStr}.pdf`;
   }
 
   /**
@@ -136,20 +137,12 @@ class ProposalDatabaseService {
     try {
       const companyName = config.Company;
 
-      // Check if proposal already exists
-      let proposal = await this.findProposalByTitle(companyName);
+      // Always create a new proposal instead of checking for existing ones
+      const proposal = await this.createProposal(companyName);
 
-      let versionNumber = 1;
-      let versionLabel = 'v1';
-
-      if (proposal) {
-        // Get next version number for existing proposal
-        versionNumber = await this.getNextVersionNumber(proposal.id);
-        versionLabel = `v${versionNumber}`;
-      } else {
-        // Create new proposal
-        proposal = await this.createProposal(companyName);
-      }
+      // Always start with version 1 for new proposals
+      const versionNumber = 1;
+      const versionLabel = 'v1';
 
       // Create proposal version
       const proposalVersion = await this.createProposalVersion({

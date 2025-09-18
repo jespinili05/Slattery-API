@@ -12,11 +12,18 @@ class PDFMergerService {
    * Merge all PDFs into final proposal
    */
   static async mergeFinalProposal(pdfPaths, outputPath) {
+    console.log('\n🔍 DEBUG: PDF Merge Input Files:');
+    pdfPaths.forEach((filePath, index) => {
+      const exists = fs.existsSync(filePath);
+      const size = exists ? fs.statSync(filePath).size : 0;
+      console.log(`   ${index + 1}. ${path.basename(filePath)} - ${exists ? `${size} bytes` : 'NOT FOUND'}`);
+    });
+
     const mergedPdf = await PDFDocument.create();
     const font = await mergedPdf.embedFont(StandardFonts.Helvetica);
-    
+
     let totalPages = 0;
-    
+
     // Copy all pages from all PDFs
     for (const pdfPath of pdfPaths) {
       if (fs.existsSync(pdfPath)) {

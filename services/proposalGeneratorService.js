@@ -37,16 +37,25 @@ class ProposalGeneratorService {
       // Setup paths
       FileUtils.ensureDirectoryExists(this.outputDir);
 
-      // Create or find proposal in database first to get version info
-      console.log('\n🗄️ Creating/updating proposal in database...');
-      const dbResult = await ProposalDatabaseService.createProposalWithVersion(config, null);
+      let finalOutputPath;
+      let dbResult = null;
 
-      // Generate versioned filename
-      const versionedFilename = ProposalDatabaseService.generateVersionedFilename(
-        config.Company,
-        dbResult.versionNumber
-      );
-      const finalOutputPath = path.join(this.outputDir, versionedFilename);
+      if (outputFileName) {
+        // Use provided filename (for refine operations)
+        console.log(`\n📁 Using provided filename: ${outputFileName}`);
+        finalOutputPath = path.join(this.outputDir, outputFileName);
+      } else {
+        // Create or find proposal in database first to get version info
+        console.log('\n🗄️ Creating/updating proposal in database...');
+        dbResult = await ProposalDatabaseService.createProposalWithVersion(config, null);
+
+        // Generate versioned filename
+        const versionedFilename = ProposalDatabaseService.generateVersionedFilename(
+          config.Company,
+          dbResult.versionNumber
+        );
+        finalOutputPath = path.join(this.outputDir, versionedFilename);
+      }
       
       // Step 1: Generate Front Page
       console.log('\n1️⃣ Generating front page...');
@@ -75,22 +84,26 @@ class ProposalGeneratorService {
         finalOutputPath
       );
       
-      // Step 5: Update database with final document path
-      console.log('\n🗄️ Updating database with document path...');
-      const documentPath = path.basename(finalOutputPath); // Just the filename, not the full path
-      await supabase
-        .from('proposal_versions')
-        .update({ document_path: documentPath })
-        .eq('id', dbResult.version.id);
+      // Step 5: Update database with final document path (only for new proposals)
+      if (dbResult) {
+        console.log('\n🗄️ Updating database with document path...');
+        const documentPath = path.basename(finalOutputPath); // Just the filename, not the full path
+        await supabase
+          .from('proposal_versions')
+          .update({ document_path: documentPath })
+          .eq('id', dbResult.version.id);
+      }
 
       // Step 6: Cleanup temporary files
       console.log('\n🧹 Cleaning up temporary files...');
-      PDFMergerService.cleanupTempFiles([frontPagePath, tocPath]);
+      const allTempFiles = [frontPagePath, tocPath, ...processedTemplates];
+      PDFMergerService.cleanupTempFiles(allTempFiles);
 
       // Generate result summary
       const result = this._generateResultSummary(finalOutputPath, tocData, config, dbResult);
 
-      console.log(`\n✅ Proposal ${dbResult.versionLabel} generated successfully: ${finalOutputPath}`);
+      const versionInfo = dbResult ? dbResult.versionLabel : path.basename(outputFileName || finalOutputPath);
+      console.log(`\n✅ Proposal ${versionInfo} generated successfully: ${finalOutputPath}`);
       return result;
       
     } catch (error) {
@@ -169,11 +182,17 @@ class ProposalGeneratorService {
    */
   _generateResultSummary(outputPath, tocData, config, dbResult = null) {
     const fileSize = FileUtils.getFileSize(outputPath);
+    const fileName = path.basename(outputPath);
+
+    // Generate URL for the file (base_url/output/filename)
+    const baseUrl = process.env.BASE_URL || `http://localhost:${process.env.PORT || 3000}`;
+    const fileUrl = `${baseUrl}/api/proposals/download/${fileName}`;
 
     const result = {
       success: true,
       outputPath,
-      fileName: path.basename(outputPath),
+      fileName: fileName,
+      location: fileUrl,
       fileSize: FileUtils.formatFileSize(fileSize),
       fileSizeBytes: fileSize,
       company: config.Company,

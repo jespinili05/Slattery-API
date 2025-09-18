@@ -5,6 +5,56 @@
 class ValidationUtils {
 
   /**
+   * Normalize config from different JSON structures
+   * Handles: array wrapper, JSON/config wrappers, or direct config
+   */
+  static normalizeConfig(inputData) {
+    let config = inputData;
+
+    // Handle array wrapper: [{ "JSON": { "config": {...} } }]
+    if (Array.isArray(inputData) && inputData.length > 0) {
+      config = inputData[0];
+    }
+
+    // Handle JSON wrapper: { "JSON": { "config": {...} } }
+    if (config.JSON && config.JSON.config) {
+      config = config.JSON.config;
+    }
+
+    // Handle config wrapper: { "config": {...} }
+    if (config.config && config.config.Company) {
+      config = config.config;
+    }
+
+    // Ensure we have the basic structure even if nested differently
+    if (!config.Company && !config.Templates) {
+      // Try to find Company and Templates at any level
+      const findInObject = (obj, key) => {
+        if (obj[key]) return obj[key];
+        for (let prop in obj) {
+          if (typeof obj[prop] === 'object' && obj[prop] !== null) {
+            const result = findInObject(obj[prop], key);
+            if (result) return result;
+          }
+        }
+        return null;
+      };
+
+      const company = findInObject(inputData, 'Company');
+      const templates = findInObject(inputData, 'Templates');
+
+      if (company || templates) {
+        config = {
+          Company: company,
+          Templates: templates || []
+        };
+      }
+    }
+
+    return config;
+  }
+
+  /**
    * Validate proposal configuration
    */
   static validateProposalConfig(config) {
@@ -34,8 +84,8 @@ class ValidationUtils {
 
         // Validate editable template fields
         if (template.editable === true) {
-          if (!template.fieldValues || typeof template.fieldValues !== 'object') {
-            errors.push(`Editable template[${index}] missing fieldValues object`);
+          if (template.fieldValues && typeof template.fieldValues !== 'object' && !Array.isArray(template.fieldValues)) {
+            errors.push(`Editable template[${index}] fieldValues must be an object or array`);
           }
         }
 
@@ -62,14 +112,25 @@ class ValidationUtils {
    */
   static validateApiRequest(req) {
     const errors = [];
-    const { config, outputFileName } = req.body;
+    let { config, outputFileName } = req.body;
 
+    // If no direct config, try to normalize the entire request body
     if (!config) {
-      errors.push('Request body must include config object');
+      config = this.normalizeConfig(req.body);
+    } else {
+      // Normalize the config in case it has wrappers
+      config = this.normalizeConfig(config);
+    }
+
+    if (!config || (!config.Company && !config.Templates)) {
+      errors.push('Request body must include config object with Company and Templates');
     } else {
       const configErrors = this.validateProposalConfig(config);
       errors.push(...configErrors);
     }
+
+    // Store the normalized config back to the request for later use
+    req.body.config = config;
 
     if (outputFileName && typeof outputFileName !== 'string') {
       errors.push('outputFileName must be a string');
